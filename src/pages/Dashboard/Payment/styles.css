@@ -1,0 +1,93 @@
+
+.subtitulo {
+    color: #8e8e8e;
+    font-size: 20px;
+}
+
+.titulo {
+    color: black;
+    font-size: 34px;
+    margin-bottom: 40px;
+}
+
+.card-form {
+  /* display: flex; */
+  display: none;
+  gap: 15px;
+  transition: all 0.3s;
+  align-items: center;
+  width: 80%;
+}
+
+.expiry-and-cvc-container {
+  display: flex;
+  gap: 10px;
+}
+
+.expiration-date-field {
+  display: inline-block;
+  flex: 1 1 auto;
+}
+
+.cvc-field {
+  display: inline-block;
+  flex: 0 0 100px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+.cor{
+    margin-top: 30px;
+    color: black;
+    font-size: 14px;
+    background-color: #e0e0e0;
+    border: none;
+    box-shadow: 0px 3px 5px rgb(34 35 58 / 20%);
+    display: none;
+}
+
+.desc{
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+.resumoContainer{
+    background-color: #ffeed2;
+    height: 108px;
+    width: 290px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    margin-top: 15px;
+}
+
+.span{
+    color: #898989;
+    font-size: 14px;
+}
+.pp{
+    color: #454545;
+    font-size: 16px;
+}
+
+.confirmadoContainer{
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+align-items: center;
+}
+
+.confirmado{
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+  color: black;
+}
+
+
+
+
