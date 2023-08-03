@@ -21,39 +21,41 @@ export default function Payment() {
   const [firstSelection, setFirstSelection] = useState({});
   const [secundSelection, setsecundSelection] = useState({});
   const [userSelect, setUserSelect] = useState();
- 
+  const [buttomSelect, setButtomSelect] = useState(false);
   const [payment, setPayment] = useState(true);
+  const [ticketUserNow, setTicketUserNow]=useState();
   const token = useToken();
   useEffect(async() => {
     try {
       const personalInformations = await getPersonalInformations(token);
       setPersonalInformations(personalInformations);
+      console.log('personalInformations', personalInformations);
+
       const arrTicketType = await ticketTypeService(token);
       setTicketType(arrTicketType);
+      console.log('arrTicketType', arrTicketType);
+
       const ticketUser = await getTickets(token);
       setUserHaveATicket(ticketUser);
     } catch (error) {
       return <Loading>Loading...</Loading>;
     }
-  }, [payment]);
-  
+  }, [buttomSelect]);
+
   if (!ticketType) return <Loading>Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso</Loading>;
 
   function reserve() {
+    setButtomSelect(true);
     setUserSelect(firstSelection.name !== 'Online' ? secundSelection : firstSelection);
   }
-  let ticketUserNow=undefined;
   async function pay() {
-    try {
-      
-    } catch (error) {
-      return toast(error.message);
-    }
-    let body = { ticketTypeId: userSelect.id }; 
-    ticketUserNow = await createTicket(body, token);
-    body = { ticketId: ticketUserNow.id };
+    let body = { ticketTypeId: userSelect.id };
+    const ticketUserNowAux = await createTicket(body, token);
+    setTicketUserNow(ticketUserNowAux);
+    body = { ticketId: ticketUserNowAux.id };
     await payTicket(body, token);
     setPayment(!payment);
+    console.log('ticketNow', ticketUserNowAux);
   }
 
   if (personalInformations) {
@@ -71,12 +73,12 @@ export default function Payment() {
         )}
         {userSelect && (
           <>
-            <CardForm first={firstSelection} second={secundSelection} ticketId={(ticketUserNow?ticketUserNow.id:'')} token={token}/>
+            <CardForm first={firstSelection} second={secundSelection} userSelect={userSelect} token={token} payment={payment} setPayment={setPayment}/>
           </>
         )}
         {(firstSelection.name === 'Online' || (firstSelection.name === 'Presencial' && secundSelection.name)) && (
           <>
-            {(userSelect?'':<ValueTicket>
+            {(userSelect ? '' : <ValueTicket>
               Fechado! O total ficou em
               <strong>
                 R${' '}
@@ -84,8 +86,8 @@ export default function Payment() {
               </strong>
               . Agora é só confirmar
             </ValueTicket>)}
-            {(userSelect?'':<ButtonSelect onClick={userSelect ? pay : reserve}>
-              {userSelect ? 'FINALIZAR PAGAMENTO' : 'RESERVAR INGRESSO'}
+            {(userSelect ? '' : <ButtonSelect onClick={userSelect ? pay : reserve}>
+               RESERVAR INGRESSO
             </ButtonSelect>)}
           </>
         )}

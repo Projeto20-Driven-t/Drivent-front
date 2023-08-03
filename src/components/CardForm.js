@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Results from './Results';
 import check from '../assets/images/akar-icons_circle-check-fill.png';
-import { payTicket } from '../../src/services/ticketApi';
+import { createTicket, payTicket } from '../../src/services/ticketApi';
 
 function CardForm(props) {
   const [name, setName] = useState('');
@@ -9,21 +9,29 @@ function CardForm(props) {
   const [expiry, setExpiry] = useState('');
   const [cvc, setCvc] = useState('');
   const [submittedData, setSubmittedData] = useState({});
-
+  const [confirmado, setConfirmado] = useState(false);
   async function handleSubmit(e) {
-    e.preventDefault();
     setSubmittedData({ name, cardNumber, expiry, cvc });
-    const body = {
-      ticketId: props.ticketId,
+    console.log('user', props.userSelect.id);
+    let body = { ticketTypeId: props.userSelect.id };
+    const ticketUserNowAux = await createTicket(body, props.token);
+    body = {
+      ticketId: ticketUserNowAux.id,
       cardData: {
         issuer: 'MasterCard',
         number: cardNumber,
         name,
-        expirationDate: Date,
+        expirationDate: expiry,
         cvv: cvc
       }
     };
-    await payTicket(body, props.token);
+    console.log('body', body);
+    await payTicket(body, props.token)
+      .then(() => {
+        props.setPayment(!props.payment);
+        setConfirmado(true);
+      })
+      .catch(() => console.log(ticketUserNowAux.id));
   }
 
   return (
@@ -42,7 +50,11 @@ function CardForm(props) {
             className="form-control mt-3"
             placeholder="Card Number"
             value={cardNumber}
-            onChange={(e) => setCardNumber(e.target.value)}
+            onChange={(e) => {
+              const CN = e.target.value;
+              setCardNumber(e.target.value);
+              setSubmittedData({ name, CN, expiry, cvc });
+            }}
           />
           <h3 className="desc">E.g.: 49 ... , 51 ... , 36 ... , 37 ...</h3>
           <input
@@ -50,7 +62,11 @@ function CardForm(props) {
             className="form-control mt-3"
             placeholder="Name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              const name1 = e.target.value;
+              setName(e.target.value);
+              setSubmittedData({ name1, cardNumber, expiry, cvc });
+            }}
           />
           <div className="expiry-and-cvc-container mt-3">
             <input
@@ -58,14 +74,22 @@ function CardForm(props) {
               className="form-control expiration-date-field"
               placeholder="Valid Thru"
               value={expiry}
-              onChange={(e) => setExpiry(e.target.value)}
+              onChange={(e) => {
+                const exp = e.target.value;
+                setExpiry(e.target.value);
+                setSubmittedData({ name, cardNumber, exp, cvc });
+              }}
             />
             <input
               type="text"
               className="form-control cvc-field ml-3"
               placeholder="CVC"
               value={cvc}
-              onChange={(e) => setCvc(e.target.value)}
+              onChange={(e) => {
+                const CV = e.target.value;
+                setCvc(e.target.value);
+                setSubmittedData({ name, cardNumber, expiry, CV });
+              }}
             />
           </div>
         </div>
@@ -78,13 +102,13 @@ function CardForm(props) {
       >
         FINALIZAR PAGAMENTO
       </button>
-      <div className="confirmadoContainer">
+      {(confirmado ? <div className="confirmadoContainer">
         <img src={check} alt='check' />
         <div className="confirmado">
           <p><strong>Pagamento confirmado!</strong></p>
           Prossiga para escolha de hospedagem e atividades
         </div>
-      </div>
+      </div> : '')}
     </>
   );
 }

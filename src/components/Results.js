@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Card from 'react-credit-cards';
+import Cards from 'react-credit-cards-2';
 
 function Results(props) {
   const { data } = props;
@@ -13,7 +13,7 @@ function Results(props) {
   return (
     <div className='mt-3'>
       <div className='mt-3 cursor-pointer' onClick={toggleCardFlip}>
-        <Card
+        <Cards
           cvc={data.cvc || ''}
           expiry={data.expiry || ''}
           name={data.name || ''}
