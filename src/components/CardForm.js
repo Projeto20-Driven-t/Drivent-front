@@ -28,13 +28,12 @@ function CardForm(props) {
       }
     };
     console.log('body', body);
-    await payTicket(body, props.token)
+    const pay = await payTicket(body, props.token)
       .then(() => {
         console.log('deu bom');
         props.setPayment(!props.payment);
-        setConfirmado(true);
-      })
-      .catch(() => console.log(ticketUserNowAux.id));
+      });
+    if (pay) setConfirmado(true);
   }
   console.log('confirmado', confirmado);
   return (
@@ -108,14 +107,13 @@ function CardForm(props) {
         </button>
       </div> : '')}
 
-      {(confirmado ?
-        <div className="confirmadoContainer">
-          <img src={check} alt='check' />
-          <div className="confirmado">
-            <p><strong>Pagamento confirmado!</strong></p>
-            Prossiga para escolha de hospedagem e atividades
-          </div>
-        </div> : '')}
+      {(confirmado ? <div className="confirmadoContainer">
+        <img src={check} alt='check' />
+        <div className="confirmado">
+          <p><strong>Pagamento confirmado!</strong></p>
+          Prossiga para escolha de hospedagem e atividades
+        </div>
+      </div> : <div></div>)}
     </>
   );
 }
