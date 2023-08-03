@@ -1,26 +1,37 @@
 import React, { useState } from 'react';
 import Results from './Results';
 import check from '../assets/images/akar-icons_circle-check-fill.png';
+import { payTicket } from '../../src/services/ticketApi';
 
-function CardForm() {
+function CardForm(props) {
   const [name, setName] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
   const [cvc, setCvc] = useState('');
   const [submittedData, setSubmittedData] = useState({});
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setSubmittedData({ name, cardNumber, expiry, cvc });
+    const body = {
+      ticketId: props.ticketId,
+      cardData: {
+        issuer: 'MasterCard',
+        number: cardNumber,
+        name,
+        expirationDate: Date,
+        cvv: cvc
+      }
+    };
+    await payTicket(body, props.token);
   }
-  
+
   return (
     <>
-      <h1 className="titulo">Ingresso e pagamento</h1>
       <h2 className="subtitulo">Ingresso escolhido</h2>
       <div className="resumoContainer">
-        <p className="pp">Presencial + Com Hotel</p>
-        <span className="span">R$ 600</span>
+        <p className="pp">{props.first.name === 'Online' ? props.first.name : `${props.first.name}` + `+${props.second.name}`}</p>
+        <span className="span">R$ {props.first.name === 'Online' ? props.first.price : props.second.price + props.first.price}</span>
       </div>
       <h2 className="subtitulo">Pagamento</h2>
       <form className="card-form">
@@ -58,17 +69,17 @@ function CardForm() {
             />
           </div>
         </div>
-      
+
       </form>
       <button
         type="submit"
         className="btn btn-primary btn-block cor"
         onClick={handleSubmit}
       >
-    FINALIZAR PAGAMENTO
+        FINALIZAR PAGAMENTO
       </button>
       <div className="confirmadoContainer">
-        <img src={check} alt='check'/>
+        <img src={check} alt='check' />
         <div className="confirmado">
           <p><strong>Pagamento confirmado!</strong></p>
           Prossiga para escolha de hospedagem e atividades
