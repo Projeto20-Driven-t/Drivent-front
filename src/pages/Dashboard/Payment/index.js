@@ -1,6 +1,6 @@
 import React from 'react';
 import CardForm from '../../../components/CardForm';
-import 'react-credit-cards/es/styles-compiled.css';
+import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import '../../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './styles.css';
 import { useEffect, useState } from 'react';
