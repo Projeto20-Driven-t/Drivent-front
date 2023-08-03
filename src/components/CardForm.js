@@ -12,8 +12,10 @@ function CardForm(props) {
   const [confirmado, setConfirmado] = useState(false);
   async function handleSubmit(e) {
     setSubmittedData({ name, cardNumber, expiry, cvc });
-    console.log('user', props.userSelect.id);
-    let body = { ticketTypeId: props.userSelect.id };
+    console.log('goodTicketType', props.goodTicketType.id);
+    let body = {
+      ticketTypeId: props.goodTicketType.id
+    };
     const ticketUserNowAux = await createTicket(body, props.token);
     body = {
       ticketId: ticketUserNowAux.id,
@@ -28,12 +30,13 @@ function CardForm(props) {
     console.log('body', body);
     await payTicket(body, props.token)
       .then(() => {
+        console.log('deu bom');
         props.setPayment(!props.payment);
         setConfirmado(true);
       })
       .catch(() => console.log(ticketUserNowAux.id));
   }
-
+  console.log('confirmado', confirmado);
   return (
     <>
       <h2 className="subtitulo">Ingresso escolhido</h2>
@@ -42,73 +45,77 @@ function CardForm(props) {
         <span className="span">R$ {props.first.name === 'Online' ? props.first.price : props.second.price + props.first.price}</span>
       </div>
       <h2 className="subtitulo">Pagamento</h2>
-      <form className="card-form">
-        <Results data={submittedData} />
-        <div className="form-group mt-4">
-          <input
-            type="text"
-            className="form-control mt-3"
-            placeholder="Card Number"
-            value={cardNumber}
-            onChange={(e) => {
-              const CN = e.target.value;
-              setCardNumber(e.target.value);
-              setSubmittedData({ name, CN, expiry, cvc });
-            }}
-          />
-          <h3 className="desc">E.g.: 49 ... , 51 ... , 36 ... , 37 ...</h3>
-          <input
-            type="text"
-            className="form-control mt-3"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => {
-              const name1 = e.target.value;
-              setName(e.target.value);
-              setSubmittedData({ name1, cardNumber, expiry, cvc });
-            }}
-          />
-          <div className="expiry-and-cvc-container mt-3">
+      {(!confirmado ? <div>
+        <form className="card-form">
+          <Results data={submittedData} />
+          <div className="form-group mt-4">
             <input
               type="text"
-              className="form-control expiration-date-field"
-              placeholder="Valid Thru"
-              value={expiry}
+              className="form-control mt-3"
+              placeholder="Card Number"
+              value={cardNumber}
               onChange={(e) => {
-                const exp = e.target.value;
-                setExpiry(e.target.value);
-                setSubmittedData({ name, cardNumber, exp, cvc });
+                const CN = e.target.value;
+                setCardNumber(e.target.value);
+                setSubmittedData({ name, CN, expiry, cvc });
               }}
             />
+            <h3 className="desc">E.g.: 49 ... , 51 ... , 36 ... , 37 ...</h3>
             <input
               type="text"
-              className="form-control cvc-field ml-3"
-              placeholder="CVC"
-              value={cvc}
+              className="form-control mt-3"
+              placeholder="Name"
+              value={name}
               onChange={(e) => {
-                const CV = e.target.value;
-                setCvc(e.target.value);
-                setSubmittedData({ name, cardNumber, expiry, CV });
+                const name1 = e.target.value;
+                setName(e.target.value);
+                setSubmittedData({ name1, cardNumber, expiry, cvc });
               }}
             />
+            <div className="expiry-and-cvc-container mt-3">
+              <input
+                type="text"
+                className="form-control expiration-date-field"
+                placeholder="Valid Thru"
+                value={expiry}
+                onChange={(e) => {
+                  const exp = e.target.value;
+                  setExpiry(e.target.value);
+                  setSubmittedData({ name, cardNumber, exp, cvc });
+                }}
+              />
+              <input
+                type="text"
+                className="form-control cvc-field ml-3"
+                placeholder="CVC"
+                value={cvc}
+                onChange={(e) => {
+                  const CV = e.target.value;
+                  setCvc(e.target.value);
+                  setSubmittedData({ name, cardNumber, expiry, CV });
+                }}
+              />
+            </div>
           </div>
-        </div>
 
-      </form>
-      <button
-        type="submit"
-        className="btn btn-primary btn-block cor"
-        onClick={handleSubmit}
-      >
-        FINALIZAR PAGAMENTO
-      </button>
-      {(confirmado ? <div className="confirmadoContainer">
-        <img src={check} alt='check' />
-        <div className="confirmado">
-          <p><strong>Pagamento confirmado!</strong></p>
-          Prossiga para escolha de hospedagem e atividades
-        </div>
+        </form>
+        <button
+          type="submit"
+          className="btn btn-primary btn-block cor"
+          onClick={handleSubmit}
+        >
+          FINALIZAR PAGAMENTO
+        </button>
       </div> : '')}
+
+      {(confirmado ?
+        <div className="confirmadoContainer">
+          <img src={check} alt='check' />
+          <div className="confirmado">
+            <p><strong>Pagamento confirmado!</strong></p>
+            Prossiga para escolha de hospedagem e atividades
+          </div>
+        </div> : '')}
     </>
   );
 }

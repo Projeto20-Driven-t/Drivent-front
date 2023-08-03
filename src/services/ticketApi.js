@@ -27,6 +27,15 @@ export async function createTicket(body, token) {
   return response.data;
 }
 
+export async function createTicketType(body, token) {
+  const response = await api.post('/tickets/types', body, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+}
+
 export async function payTicket(body, token) {
   const response = await api.post('/payments/process', body, {
     headers: {

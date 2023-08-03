@@ -12,7 +12,7 @@ import { Loading } from '../../../components/Loading';
 import Ticket from '../../../components/Dashboard/Payment/Options';
 import { CardTicketsBlock } from '../../../components/Dashboard/Payment/Card';
 import { toast } from 'react-toastify';
-import { createTicket, getTickets, payTicket, ticketTypeService } from '../../../services/ticketApi';
+import { createTicket, createTicketType, getTickets, payTicket, ticketTypeService } from '../../../services/ticketApi';
 
 export default function Payment() {
   const [userHaveATicket, setUserHaveATicket] = useState();
@@ -24,6 +24,8 @@ export default function Payment() {
   const [buttomSelect, setButtomSelect] = useState(false);
   const [payment, setPayment] = useState(true);
   const [ticketUserNow, setTicketUserNow]=useState();
+  const [goodTicketType, setGoodTicketType]=useState({});
+
   const token = useToken();
   useEffect(async() => {
     try {
@@ -44,12 +46,20 @@ export default function Payment() {
 
   if (!ticketType) return <Loading>Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso</Loading>;
 
-  function reserve() {
+  async function reserve() {
+    //createTicketType -> passar o ticketTypeId por props
+    const body={
+      name: 'aaaa',
+      price: 50,
+      isRemote: false,
+      includesHotel: true
+    };
+    setGoodTicketType(await createTicketType(body, token));
     setButtomSelect(true);
     setUserSelect(firstSelection.name !== 'Online' ? secundSelection : firstSelection);
   }
   async function pay() {
-    let body = { ticketTypeId: userSelect.id };
+    let body = { ticketTypeId: goodTicketType.id };
     const ticketUserNowAux = await createTicket(body, token);
     setTicketUserNow(ticketUserNowAux);
     body = { ticketId: ticketUserNowAux.id };
@@ -73,7 +83,7 @@ export default function Payment() {
         )}
         {userSelect && (
           <>
-            <CardForm first={firstSelection} second={secundSelection} userSelect={userSelect} token={token} payment={payment} setPayment={setPayment}/>
+            <CardForm first={firstSelection} second={secundSelection} goodTicketType={goodTicketType} token={token} payment={payment} setPayment={setPayment}/>
           </>
         )}
         {(firstSelection.name === 'Online' || (firstSelection.name === 'Presencial' && secundSelection.name)) && (
