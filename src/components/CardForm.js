@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
-import Results from './Results';
+import Cards from 'react-credit-cards-2';
 import check from '../assets/images/akar-icons_circle-check-fill.png';
 import { createTicket, payTicket } from '../../src/services/ticketApi';
 
 function CardForm(props) {
-  const [name, setName] = useState('');
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvc, setCvc] = useState('');
-  const [submittedData, setSubmittedData] = useState({});
+  const [state, setState] = useState({
+    number: '',
+    expiry: '',
+    cvc: '',
+    name: '',
+    focus: '',
+  });
   const [confirmado, setConfirmado] = useState(false);
+  const handleInputChange = (evt) => {
+    const { name, value } = evt.target;
+
+    setState((prev) => ({ ...prev, [name]: value }));
+  };
   async function handleSubmit(e) {
-    setSubmittedData({ name, cardNumber, expiry, cvc });
-    console.log('goodTicketType', props.goodTicketType.id);
     let body = {
       ticketTypeId: props.goodTicketType.id
     };
@@ -21,10 +26,10 @@ function CardForm(props) {
       ticketId: ticketUserNowAux.id,
       cardData: {
         issuer: 'MasterCard',
-        number: cardNumber,
-        name,
-        expirationDate: expiry,
-        cvv: cvc
+        number: state.number,
+        name: state.name,
+        expirationDate: state.expiry,
+        cvv: state.cvc
       }
     };
     console.log('body', body);
@@ -32,9 +37,12 @@ function CardForm(props) {
       .then(() => {
         console.log('deu bom');
         props.setPayment(!props.payment);
+        setConfirmado(true);
       });
-    if (pay) setConfirmado(true);
-  }
+  };
+  const handleInputFocus = (evt) => {
+    setState((prev) => ({ ...prev, focus: evt.target.name }));
+  };
   console.log('confirmado', confirmado);
   return (
     <>
@@ -44,64 +52,67 @@ function CardForm(props) {
         <span className="span">R$ {props.first.name === 'Online' ? props.first.price : props.second.price + props.first.price}</span>
       </div>
       <h2 className="subtitulo">Pagamento</h2>
-      {(!confirmado ? <div>
-        <form className="card-form">
-          <Results data={submittedData} />
-          <div className="form-group mt-4">
-            <input
-              type="text"
-              className="form-control mt-3"
-              placeholder="Card Number"
-              value={cardNumber}
-              onChange={(e) => {
-                const CN = e.target.value;
-                setCardNumber(e.target.value);
-                setSubmittedData({ name, CN, expiry, cvc });
-              }}
-            />
-            <h3 className="desc">E.g.: 49 ... , 51 ... , 36 ... , 37 ...</h3>
-            <input
-              type="text"
-              className="form-control mt-3"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => {
-                const name1 = e.target.value;
-                setName(e.target.value);
-                setSubmittedData({ name1, cardNumber, expiry, cvc });
-              }}
-            />
-            <div className="expiry-and-cvc-container mt-3">
+      {(!confirmado ? <div className='containerExt'>
+        <div className="containerInt">
+          <Cards
+            number={state.number}
+            expiry={state.expiry}
+            cvc={state.cvc}
+            name={state.name}
+            focused={state.focus}
+          />
+          <form className="card-form">
+            <div className="form-group mt-4">
+              <input
+                type="number"
+                name="number"
+                placeholder="Card Number"
+                value={state.number}
+                onChange={handleInputChange}
+                onFocus={handleInputFocus}
+              />
+              <h3 className="desc">E.g.: 49 ... , 51 ... , 36 ... , 37 ...</h3>
               <input
                 type="text"
-                className="form-control expiration-date-field"
-                placeholder="Valid Thru"
-                value={expiry}
-                onChange={(e) => {
-                  const exp = e.target.value;
-                  setExpiry(e.target.value);
-                  setSubmittedData({ name, cardNumber, exp, cvc });
-                }}
+                className="form-control mt-3"
+                placeholder="Name"
+                name="name"
+                value={state.name}
+                onChange={handleInputChange}
+                onFocus={handleInputFocus}
               />
-              <input
-                type="text"
-                className="form-control cvc-field ml-3"
-                placeholder="CVC"
-                value={cvc}
-                onChange={(e) => {
-                  const CV = e.target.value;
-                  setCvc(e.target.value);
-                  setSubmittedData({ name, cardNumber, expiry, CV });
-                }}
-              />
+              <div className="expiry-and-cvc-container mt-3">
+                <input
+                  type="tel"
+                  className="form-control expiration-date-field"
+                  placeholder="Valid Thru"
+                  name="expiry"
+                  pattern="\d\d/\d\d"
+                  value={state.expiry}
+                  onChange={handleInputChange}
+                  onFocus={handleInputFocus}
+                />
+                <input
+                  type="tel"
+                  className="form-control cvc-field ml-3"
+                  placeholder="CVC"
+                  name="cvc"
+                  pattern="\d{3,4}"
+                  value={state.cvc}
+                  onChange={handleInputChange}
+                  onFocus={handleInputFocus}
+                />
+              </div>
             </div>
-          </div>
 
-        </form>
+          </form>
+        </div>
         <button
           type="submit"
           className="btn btn-primary btn-block cor"
           onClick={handleSubmit}
+          disabled={state.name.length === 0 || state.number.length < 16 || state.expiry.length < 5 || state.cvc.length < 3}
+          
         >
           FINALIZAR PAGAMENTO
         </button>
