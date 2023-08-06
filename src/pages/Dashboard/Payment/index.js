@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import { createTicket, createTicketType, getTickets, payTicket, ticketTypeService } from '../../../services/ticketApi';
 
 export default function Payment() {
+  // eslint-disable-next-line
   const [userHaveATicket, setUserHaveATicket] = useState();
   const [personalInformations, setPersonalInformations] = useState();
   const [ticketType, setTicketType] = useState();
