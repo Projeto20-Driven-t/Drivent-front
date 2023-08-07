@@ -10,11 +10,10 @@ import { Title } from '../../../assets/styles/payment';
 import useToken from '../../../hooks/useToken';
 import { Loading } from '../../../components/Loading';
 import Ticket from '../../../components/Dashboard/Payment/Options';
-import { CardTicketsBlock } from '../../../components/Dashboard/Payment/Card';
-import { toast } from 'react-toastify';
 import { createTicket, createTicketType, getTickets, payTicket, ticketTypeService } from '../../../services/ticketApi';
 
 export default function Payment() {
+  // eslint-disable-next-line
   const [userHaveATicket, setUserHaveATicket] = useState();
   const [personalInformations, setPersonalInformations] = useState();
   const [ticketType, setTicketType] = useState();
@@ -31,11 +30,9 @@ export default function Payment() {
     try {
       const personalInformations = await getPersonalInformations(token);
       setPersonalInformations(personalInformations);
-      console.log('personalInformations', personalInformations);
 
       const arrTicketType = await ticketTypeService(token);
       setTicketType(arrTicketType);
-      console.log('arrTicketType', arrTicketType);
 
       const ticketUser = await getTickets(token);
       setUserHaveATicket(ticketUser);
@@ -53,7 +50,6 @@ export default function Payment() {
       isRemote: (firstSelection.name === 'Presencial'?false:true),
       includesHotel: (secundSelection.name=== 'Sem Hotel'?false:true)
     };
-    console.log('reserva', body);
 
     setGoodTicketType(await createTicketType(body, token));
     body = {
@@ -63,7 +59,6 @@ export default function Payment() {
     setButtomSelect(true);
     setUserSelect(firstSelection.name !== 'Online' ? secundSelection : firstSelection);
   }
-  console.log('second', secundSelection);
   async function pay() {
     let body = { ticketTypeId: goodTicketType.id };
     const ticketUserNowAux = await createTicket(body, token);
@@ -71,7 +66,6 @@ export default function Payment() {
     body = { ticketId: ticketUserNowAux.id };
     await payTicket(body, token);
     setPayment(!payment);
-    console.log('ticketNow', ticketUserNowAux);
   }
 
   if (personalInformations) {

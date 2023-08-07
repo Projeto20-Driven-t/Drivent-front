@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Cards from 'react-credit-cards-2';
 import check from '../assets/images/akar-icons_circle-check-fill.png';
-import { createTicket, payTicket } from '../../src/services/ticketApi';
+import { payTicket } from '../../src/services/ticketApi';
 
 function CardForm(props) {
   const [state, setState] = useState({
@@ -28,10 +28,9 @@ function CardForm(props) {
         cvv: state.cvc
       }
     };
-    console.log('body', body);
+    // eslint-disable-next-line
     const pay = await payTicket(body, props.token)
       .then(() => {
-        console.log('deu bom');
         props.setPayment(!props.payment);
         setConfirmado(true); 
       });
@@ -39,11 +38,11 @@ function CardForm(props) {
   const handleInputFocus = (evt) => {
     setState((prev) => ({ ...prev, focus: evt.target.name }));
   };
-  console.log('confirmado', confirmado);
   return (
     <>
       <h2 className="subtitulo">Ingresso escolhido</h2>
       <div className="resumoContainer">
+        {/* eslint-disable-next-line */}
         <p className="pp">{props.first.name === 'Online' ? props.first.name : `${props.first.name}` + `+${props.second.name}`}</p>
         <span className="span">R$ {props.first.name === 'Online' ? props.first.price : props.second.price + props.first.price}</span>
       </div>
