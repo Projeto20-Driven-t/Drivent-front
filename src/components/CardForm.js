@@ -19,11 +19,7 @@ function CardForm(props) {
   };
   async function handleSubmit(e) {
     let body = {
-      ticketTypeId: props.goodTicketType.id
-    };
-    const ticketUserNowAux = await createTicket(body, props.token);
-    body = {
-      ticketId: ticketUserNowAux.id,
+      ticketId: props.ticket.id,
       cardData: {
         issuer: 'MasterCard',
         number: state.number,
@@ -37,7 +33,7 @@ function CardForm(props) {
       .then(() => {
         console.log('deu bom');
         props.setPayment(!props.payment);
-        setConfirmado(true);
+        setConfirmado(true); 
       });
   };
   const handleInputFocus = (evt) => {

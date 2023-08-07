@@ -47,17 +47,23 @@ export default function Payment() {
   if (!ticketType) return <Loading>Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso</Loading>;
 
   async function reserve() {
-    //createTicketType -> passar o ticketTypeId por props
-    const body={
+    let body={
       name: 'aaaa',
-      price: 50,
-      isRemote: false,
-      includesHotel: true
+      price: (firstSelection.name === 'Online' ? firstSelection.price : secundSelection.price + firstSelection.price),
+      isRemote: (firstSelection.name === 'Presencial'?false:true),
+      includesHotel: (secundSelection.name=== 'Sem Hotel'?false:true)
     };
+    console.log('reserva', body);
+
     setGoodTicketType(await createTicketType(body, token));
+    body = {
+      ticketTypeId: goodTicketType.id
+    };
+    setTicketUserNow(await createTicket(body, token));
     setButtomSelect(true);
     setUserSelect(firstSelection.name !== 'Online' ? secundSelection : firstSelection);
   }
+  console.log('second', secundSelection);
   async function pay() {
     let body = { ticketTypeId: goodTicketType.id };
     const ticketUserNowAux = await createTicket(body, token);
@@ -83,7 +89,7 @@ export default function Payment() {
         )}
         {userSelect && (
           <>
-            <CardForm first={firstSelection} second={secundSelection} goodTicketType={goodTicketType} token={token} payment={payment} setPayment={setPayment}/>
+            <CardForm first={firstSelection} second={secundSelection} goodTicketType={goodTicketType} ticket={ticketUserNow} token={token} payment={payment} setPayment={setPayment}/>
           </>
         )}
         {(firstSelection.name === 'Online' || (firstSelection.name === 'Presencial' && secundSelection.name)) && (
