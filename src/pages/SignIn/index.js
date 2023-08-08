@@ -43,30 +43,16 @@ export default function SignIn() {
   window.onload = async() => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
-    console.log('botao');
     if (code) {
       const response = await api.post('/auth/login', { code });
-      console.log('response data', response);
       const user = response.data;
-      console.log('user', user);
-      console.log('user.id', (user.id).toString());
-      console.log('user.email', user.email);
       try{
-        console.log('hasLogin antes');
         const hasLogin = await signIn(user.email, (user.id).toString());
-        console.log('hasLogin dps', hasLogin);
-        console.log('has login');
         setUserData(hasLogin);
       }catch{
-        console.log('hasnt login');
         await signUp(user.email, (user.id).toString()); //email e password
         setUserData(await signIn(user.email, (user.id).toString()));
       }
-      // if (hasLogin.length !== 0) {
-        
-      // } else {
-        
-      // };
       setTimeout(() => navigate('/dashboard/subscription'), 5);
     }
   };
