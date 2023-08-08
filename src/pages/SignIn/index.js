@@ -14,6 +14,7 @@ import EventInfoContext from '../../contexts/EventInfoContext';
 import UserContext from '../../contexts/UserContext';
 
 import useSignIn from '../../hooks/api/useSignIn';
+import { signUp } from '../../services/userApi';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
@@ -44,18 +45,29 @@ export default function SignIn() {
     const code = urlParams.get('code');
     console.log('botao');
     if (code) {
-      try {
-        const response = await api.post('/auth/login', { code });
-        console.log ('response data', response);
-        // const { token } = response.data;
-        // localStorage.setItem('token', token);
-        const user = response.data;
-        console.log ('user', user);
-
-        // navigate('/dashboard/subscription');
-      } catch (err) {
-        console.log('deu ruim');
+      const response = await api.post('/auth/login', { code });
+      console.log('response data', response);
+      const user = response.data;
+      console.log('user', user);
+      console.log('user.id', (user.id).toString());
+      console.log('user.email', user.email);
+      try{
+        console.log('hasLogin antes');
+        const hasLogin = await signIn(user.email, (user.id).toString());
+        console.log('hasLogin dps', hasLogin);
+        console.log('has login');
+        setUserData(hasLogin);
+      }catch{
+        console.log('hasnt login');
+        await signUp(user.email, (user.id).toString()); //email e password
+        setUserData(await signIn(user.email, (user.id).toString()));
       }
+      // if (hasLogin.length !== 0) {
+        
+      // } else {
+        
+      // };
+      setTimeout(() => navigate('/dashboard/subscription'), 5);
     }
   };
 
