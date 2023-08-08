@@ -24,7 +24,7 @@ export default function SignIn() {
   const { setUserData } = useContext(UserContext);
 
   const navigate = useNavigate();
-  
+
   async function submit(event) {
     event.preventDefault();
 
@@ -36,7 +36,21 @@ export default function SignIn() {
     } catch (err) {
       toast('Não foi possível fazer o login!');
     }
-  } 
+  }
+
+  function github() {
+    const GITHUB_URL = 'https://github.com/login/oauth/authorize';
+    const CLIENT_ID = '1d9e79555d6221240ef3';
+    const params = new URLSearchParams({
+      response_type: 'code',
+      scope: 'user',
+      client_id: CLIENT_ID,
+      redirect_uri: 'http://localhost:3000/dashboard/subscription'
+    });
+
+    const authURL = `${GITHUB_URL}?${params.toString()}`;
+    window.location.href = authURL;
+  }
 
   return (
     <AuthLayout background={eventInfo.backgroundImageUrl}>
@@ -53,6 +67,7 @@ export default function SignIn() {
         </form>
       </Row>
       <Row>
+        <button onClick={() => github()}>GITHUB</button>
         <Link to="/enroll">Não possui login? Inscreva-se</Link>
       </Row>
     </AuthLayout>
