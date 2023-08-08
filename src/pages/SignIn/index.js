@@ -1,13 +1,14 @@
 import { useState, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import api from '../../services/api';
 
 import AuthLayout from '../../layouts/Auth';
 
 import Input from '../../components/Form/Input';
 import Button from '../../components/Form/Button';
 import Link from '../../components/Link';
-import { Row, Title, Label } from '../../components/Auth';
+import { Row, Title, Label, GithubButton } from '../../components/Auth';
 
 import EventInfoContext from '../../contexts/EventInfoContext';
 import UserContext from '../../contexts/UserContext';
@@ -38,6 +39,26 @@ export default function SignIn() {
     }
   }
 
+  window.onload = async() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    console.log('botao');
+    if (code) {
+      try {
+        const response = await api.post('/auth/login', { code });
+        console.log ('response data', response);
+        // const { token } = response.data;
+        // localStorage.setItem('token', token);
+        const user = response.data;
+        console.log ('user', user);
+
+        // navigate('/dashboard/subscription');
+      } catch (err) {
+        console.log('deu ruim');
+      }
+    }
+  };
+
   function github() {
     const GITHUB_URL = 'https://github.com/login/oauth/authorize';
     const CLIENT_ID = '1d9e79555d6221240ef3';
@@ -45,7 +66,7 @@ export default function SignIn() {
       response_type: 'code',
       scope: 'user',
       client_id: CLIENT_ID,
-      redirect_uri: 'http://localhost:3000/dashboard/subscription'
+      redirect_uri: 'http://localhost:3000/sign-in'
     });
 
     const authURL = `${GITHUB_URL}?${params.toString()}`;
@@ -67,7 +88,7 @@ export default function SignIn() {
         </form>
       </Row>
       <Row>
-        <button onClick={() => github()}>GITHUB</button>
+        <GithubButton onClick={() => github()}>Login com GitHub</GithubButton>
         <Link to="/enroll">Não possui login? Inscreva-se</Link>
       </Row>
     </AuthLayout>

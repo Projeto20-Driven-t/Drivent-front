@@ -27,3 +27,10 @@ export const Row = styled.div`
   justify-content: flex-start;
   width: 100%;
 `;
+
+export const GithubButton=styled.button`
+  border: solid 1px gray;
+  width: 100%;
+  height: 40px;
+  margin-bottom: 30px;
+`;
