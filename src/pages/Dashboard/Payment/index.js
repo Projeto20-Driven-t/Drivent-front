@@ -10,8 +10,6 @@ import { Title } from '../../../assets/styles/payment';
 import useToken from '../../../hooks/useToken';
 import { Loading } from '../../../components/Loading';
 import Ticket from '../../../components/Dashboard/Payment/Options';
-import { CardTicketsBlock } from '../../../components/Dashboard/Payment/Card';
-import { toast } from 'react-toastify';
 import { createTicket, createTicketType, getTickets, payTicket, ticketTypeService } from '../../../services/ticketApi';
 
 export default function Payment() {
@@ -32,11 +30,9 @@ export default function Payment() {
     try {
       const personalInformations = await getPersonalInformations(token);
       setPersonalInformations(personalInformations);
-      console.log('personalInformations', personalInformations);
 
       const arrTicketType = await ticketTypeService(token);
       setTicketType(arrTicketType);
-      console.log('arrTicketType', arrTicketType);
 
       const ticketUser = await getTickets(token);
       setUserHaveATicket(ticketUser);
@@ -48,14 +44,18 @@ export default function Payment() {
   if (!ticketType) return <Loading>Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso</Loading>;
 
   async function reserve() {
-    //createTicketType -> passar o ticketTypeId por props
-    const body={
+    let body={
       name: 'aaaa',
-      price: 50,
-      isRemote: false,
-      includesHotel: true
+      price: (firstSelection.name === 'Online' ? firstSelection.price : secundSelection.price + firstSelection.price),
+      isRemote: (firstSelection.name === 'Presencial'?false:true),
+      includesHotel: (secundSelection.name=== 'Sem Hotel'?false:true)
     };
+
     setGoodTicketType(await createTicketType(body, token));
+    body = {
+      ticketTypeId: goodTicketType.id
+    };
+    setTicketUserNow(await createTicket(body, token));
     setButtomSelect(true);
     setUserSelect(firstSelection.name !== 'Online' ? secundSelection : firstSelection);
   }
@@ -66,7 +66,6 @@ export default function Payment() {
     body = { ticketId: ticketUserNowAux.id };
     await payTicket(body, token);
     setPayment(!payment);
-    console.log('ticketNow', ticketUserNowAux);
   }
 
   if (personalInformations) {
@@ -84,7 +83,7 @@ export default function Payment() {
         )}
         {userSelect && (
           <>
-            <CardForm first={firstSelection} second={secundSelection} goodTicketType={goodTicketType} token={token} payment={payment} setPayment={setPayment}/>
+            <CardForm first={firstSelection} second={secundSelection} goodTicketType={goodTicketType} ticket={ticketUserNow} token={token} payment={payment} setPayment={setPayment}/>
           </>
         )}
         {(firstSelection.name === 'Online' || (firstSelection.name === 'Presencial' && secundSelection.name)) && (
