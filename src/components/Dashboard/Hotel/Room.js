@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import { IoPersonOutline } from 'react-icons/io5';
 
 export default function Room(props) {
+  //eslint-disable-next-line
+  const [isFull, setIsFull] = useState(false);
   const { id, name, capacity, setSelectedRoom } = props;
   const people = [];
   for (let i = 0; i < capacity; i++) {
@@ -9,6 +11,7 @@ export default function Room(props) {
   }
   return (
     <RoomCard
+      disabled={isFull}
       onClick={() => {
         setSelectedRoom(id);
       }}
@@ -23,7 +26,7 @@ export default function Room(props) {
   );
 }
 
-const RoomCard = styled.div`
+const RoomCard = styled.button`
   width: 190px;
   height: 45px;
   padding: 9px;

@@ -15,14 +15,13 @@ export default function Hotels() {
 
   async function getHotelWithRooms(hotelId) {
     try {
-      const hotelAndRooms = await getHotelWithRoomsByHotelId(hotelId, token);
-      //eslint-disable-next-line
-      console.log(hotelAndRooms.Rooms);
-      setHotelWithRooms(hotelAndRooms.Rooms);
+      return await getHotelWithRoomsByHotelId(hotelId, token);
     } catch (error) {
       alert(error);
     }
   }
+
+  async function getRoomBookings(roomId) {}
 
   async function selectRoom(roomId) {
     setSelectedRoom(roomId);
@@ -31,7 +30,12 @@ export default function Hotels() {
   useEffect(() => {
     async function getHotelsList(token) {
       const hotelsList = await hotelsListService(token);
-      setHotels(hotelsList);
+
+      const HotelsAndRooms = await hotelsList.map((hotel) => {
+        getHotelWithRooms(hotel.id);
+      });
+
+      const totalBookings = await setHotels(hotelsList);
       setIsLoading(false);
     }
     getHotelsList();
