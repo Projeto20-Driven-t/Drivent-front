@@ -10,36 +10,45 @@ export default function Hotels() {
   const [hotels, setHotels] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hotelWithRooms, setHotelWithRooms] = useState([]);
+  // eslint-disable-next-line
   const [selectedRoom, setSelectedRoom] = useState(null);
   const token = useToken();
 
+  useEffect(() => {
+    async function getHotelsList(token) {
+      const hotelsWithVacanciesList = await hotelsListService(token);
+      setHotels(hotelsWithVacanciesList);
+      setIsLoading(false);
+    }
+    getHotelsList(token);
+  }, []);
+
   async function getHotelWithRooms(hotelId) {
     try {
-      return await getHotelWithRoomsByHotelId(hotelId, token);
+      const hotelWithRooms = await getHotelWithRoomsByHotelId(hotelId, token);
+      // eslint-disable-next-line
+      console.log(hotelWithRooms.Rooms);
+      setHotelWithRooms(hotelWithRooms.Rooms); 
     } catch (error) {
       alert(error);
     }
   }
 
-  async function getRoomBookings(roomId) {}
+  /*
+  async function getHotelsWithVacancies(HotelsAndRooms) {
+    const HotelsWithVacancies = [];
+    HotelsAndRooms.map(hotel => {
+      let hotelCapacity = hotel.Rooms.reduce(function(acc, currentValue) {
+        return acc + currentValue.capacity;
+      }, 0);
+      let hotelBookings = HotelsAndRooms.map(hotel => {
+        hotel.Rooms.map(room => {
 
-  async function selectRoom(roomId) {
-    setSelectedRoom(roomId);
-  }
-
-  useEffect(() => {
-    async function getHotelsList(token) {
-      const hotelsList = await hotelsListService(token);
-
-      const HotelsAndRooms = await hotelsList.map((hotel) => {
-        getHotelWithRooms(hotel.id);
+        });
       });
-
-      const totalBookings = await setHotels(hotelsList);
-      setIsLoading(false);
-    }
-    getHotelsList();
-  }, []);
+    });
+  }
+*/
 
   if (isLoading) return <Loading>Loading...</Loading>;
   return (
@@ -54,6 +63,7 @@ export default function Hotels() {
                 id={hotel.id}
                 name={hotel.name}
                 image={hotel.image}
+                vacancies={hotel.vacancies}
                 getHotelWithRooms={getHotelWithRooms}
               />
             );
@@ -68,7 +78,7 @@ export default function Hotels() {
         <RoomsContainer>
           {hotelWithRooms ? (
             hotelWithRooms.map((room, index) => (
-              <Room key={index} id={room.id} name={room.name} capacity={room.capacity} selectRoom={selectRoom} />
+              <Room key={index} id={room.id} name={room.name} capacity={room.capacity} setSelectRoom={setSelectedRoom} />
             ))
           ) : (
             <></>
