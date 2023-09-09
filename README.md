@@ -6,6 +6,10 @@ Front-end for Driven.t, an event management solution.
 
 Driven.t is a web browser application with which you can manage every single aspect of your event.
 
+## :white_check_mark: Technologies
+<img align="center" alt="LB-CSS"   src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />
+<img align="center" alt="LB-CSS"   src="https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white" /> 
+
 ## How to run for development
 
 1. Clone this repository
